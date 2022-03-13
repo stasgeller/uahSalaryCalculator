@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  go:
+    build:
+      context: .
+      dockerfile: docker/Go.Dockerfile
+#      target: debug
+    env_file: .env
+    volumes:
+      - ./:/go/uahSalaryBot
+    ports:
+      - 8080:8080
+    depends_on:
+      - sqlite
+
+  sqlite:
+    image: keinos/sqlite3:latest
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./db/:/root/db/
