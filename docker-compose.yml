@@ -10,6 +10,8 @@ services:
       - ./:/go/uahSalaryBot
     ports:
       - 8080:8080
+    environment:
+      BOT_API_KEY: ${TG_BOT_API_KEY}
     depends_on:
       - sqlite
 
