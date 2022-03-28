@@ -1,4 +1,7 @@
 .idea
 .env
 
+#sqlite
+identifier.sqlite
+
 uahSalaryBot
