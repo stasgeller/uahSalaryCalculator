@@ -1,39 +1,43 @@
 package main
 
 import (
-	"fmt"
+	"context"
 	"log"
 	"os"
+	"os/signal"
+	"uahSalaryBot/infrastructure"
+	"uahSalaryBot/service"
 
-	tgbotapi "github.com/Syfaro/telegram-bot-api"
+	"github.com/joho/godotenv"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
-	apiKey := os.Getenv("BOT_API_KEY")
+	if err := godotenv.Load(".env"); err != nil {
+		logrus.Fatal("Could not load .env file")
+	}
 
-	//TODO: provide context walking
-	//ctx, cancel := context.WithCancel(context.Background())
-
-	bot, err := tgbotapi.NewBotAPI(apiKey)
+	token := os.Getenv("BOT_API_KEY")
+	if token == "" {
+		log.Panic("Tg token is not set")
+	}
+	bot, err := service.NewTgBot(token)
 	if err != nil {
-		log.Panic(fmt.Printf("Api key is incorrect: %s", err.Error()))
+		log.Panic("Token is not valid")
 	}
 
 	bot.Debug = true
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
-	ucfg := tgbotapi.NewUpdate(0)
-	ucfg.Timeout = 60
-	updates, err := bot.GetUpdatesChan(ucfg)
+	grace := make(chan os.Signal, 1)
+	signal.Notify(grace, os.Interrupt)
+	ctx, cancel := context.WithCancel(context.Background())
 
-	for update := range updates {
-		if update.Message == nil { // ignore any non-Message Updates
-			continue
-		}
+	go func() {
+		logrus.Errorf("system call: %+v", <-grace)
+		cancel()
+	}()
 
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
-		msg.ReplyToMessageID = update.Message.MessageID
-
-		bot.Send(msg)
-	}
+	commandManager := infrastructure.NewManager(bot)
+	commandManager.Run(ctx, bot)
 }
