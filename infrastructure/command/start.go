@@ -2,24 +2,32 @@ package command
 
 import (
 	"context"
-	"fmt"
-	"os"
-	"uahSalaryBot/service"
+	"uahSalaryBot/infrastructure/domain"
 
-	"github.com/enescakir/emoji"
-	tgbot "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/sirupsen/logrus"
 )
 
-type TgBot interface {
-	Send(context.Context, tgbot.Chattable) error
+type CurrentChat string
+
+const ChatId CurrentChat = "currentChatId"
+
+type HandlerActions interface {
+	Use(context.Context, interface{}) error
 }
 
-//Start - returns Hello message with the list of available commands.
-func Start(ctx context.Context, update tgbot.Update, bot *service.TelegramBot) {
-	welcomeLetter := fmt.Sprintf(`Привет%s Добро пожаловать в %s`, emoji.SmilingFaceWithHalo, os.Getenv("BOT_NAME"))
+type Start struct {
+	usecase HandlerActions
+}
 
-	if err := bot.Send(ctx, tgbot.NewMessage(update.Message.Chat.ID, welcomeLetter)); err != nil {
-		logrus.Errorf("[command]: could not send message - %s", err.Error())
+func NewStart(uc HandlerActions) *Start {
+	return &Start{uc}
+}
+
+//StartAction - returns Hello message with the list of available commands.
+func (s *Start) StartAction(ctx context.Context, message *domain.Message) {
+	ctx = context.WithValue(ctx, ChatId, message.ChatID)
+
+	if err := s.usecase.Use(ctx, message.User); err != nil {
+		logrus.Errorf("%s", err)
 	}
 }

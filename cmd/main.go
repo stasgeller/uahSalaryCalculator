@@ -5,8 +5,10 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"uahSalaryBot/infrastructure"
+	"uahSalaryBot/external"
+	"uahSalaryBot/external/telegram"
 	"uahSalaryBot/service"
+	"uahSalaryBot/usecase"
 
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
@@ -21,13 +23,12 @@ func main() {
 	if token == "" {
 		log.Panic("Tg token is not set")
 	}
-	bot, err := service.NewTgBot(token)
+	bot, err := telegram.NewTgBot(token)
 	if err != nil {
 		log.Panic("Token is not valid")
 	}
 
-	bot.Debug = true
-	log.Printf("Authorized on account %s", bot.Self.UserName)
+	log.Printf("Authorized on account %s", os.Getenv("BOT_NAME"))
 
 	grace := make(chan os.Signal, 1)
 	signal.Notify(grace, os.Interrupt)
@@ -38,6 +39,19 @@ func main() {
 		cancel()
 	}()
 
-	commandManager := infrastructure.NewManager(bot)
-	commandManager.Run(ctx, bot)
+	commands := setDependencies(bot)
+
+	server := service.NewManagerServer(bot, commands)
+	server.Run(ctx)
+}
+
+func setDependencies(bot *telegram.TelegramBot) *service.Commands {
+	dbClient := external.NewDbClient()
+
+	repositories := service.NewRepositories(dbClient)
+	clients := usecase.NewClients(bot, repositories)
+	useCases := service.NewUseCases(clients)
+	commands := service.NewCommands(useCases)
+
+	return commands
 }

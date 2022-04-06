@@ -2,6 +2,6 @@
 .env
 
 #sqlite
-identifier.sqlite
+./db/salary_bot
 
 uahSalaryBot
