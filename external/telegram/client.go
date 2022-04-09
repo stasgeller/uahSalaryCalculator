@@ -7,9 +7,15 @@ import (
 	tgbot "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
+type TgClient interface {
+	Send(tgbot.Chattable) (tgbot.Message, error)
+	StopReceivingUpdates()
+	GetUpdatesChan(tgbot.UpdateConfig) tgbot.UpdatesChannel
+}
+
 //TelegramBot - custom telegram client
 type TelegramBot struct {
-	client *tgbot.BotAPI
+	client TgClient
 }
 
 //NewTgBot - initialize telegram bot client.

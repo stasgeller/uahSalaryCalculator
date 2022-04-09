@@ -30,7 +30,7 @@ func NewUseCases(cs *usecase.Clients) *UseCases {
 
 //StartCommand - stores methods for Start action
 type StartCommand interface {
-	StartAction(context.Context, *domain.Message)
+	StartAction(context.Context, *domain.Message) error
 }
 
 //Commands - stores all available commands

@@ -40,7 +40,8 @@ func (u *User) Delete(ctx context.Context) error {
 
 //FindOrCreate find by Username or create if not exist
 //bool parameter returns true if user is found, false if created
-func (u *User) FindOrCreate(_ context.Context) error {
+func (u *User) FindOrCreate(_ context.Context, d *domain.User) error {
+	u.setModel(d)
 	db := u.client.FirstOrCreate(u.model, &user{Username: u.model.Username})
 
 	if db.Error != nil {
@@ -50,8 +51,8 @@ func (u *User) FindOrCreate(_ context.Context) error {
 	return nil
 }
 
-//SetModel convert domain model to repository model. Must be used when run methods from BaseUser interface
-func (u *User) SetModel(domain *domain.User) *User {
+//setModel convert domain model to repository model. Must be used when run methods from BaseUser interface
+func (u *User) setModel(domain *domain.User) *User {
 	u.model = &user{
 		ID:        domain.ID,
 		FirstName: domain.FirstName,

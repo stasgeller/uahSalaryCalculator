@@ -15,7 +15,7 @@ type CommandsInfrastructure interface {
 }
 
 //Handler - command handler
-type Handler func(ctx context.Context, message *domain.Message)
+type Handler func(ctx context.Context, message *domain.Message) error
 
 //Manager - manager for resolving commands with handlers.
 type Manager struct {
@@ -43,7 +43,8 @@ func (m *Manager) Run(ctx context.Context) {
 			case mes := <-message:
 				if command, ok := telegram.CommandMap[mes.Command]; ok {
 					if handler, ok := m.commands[command]; ok {
-						handler(ctx, mes)
+						err := handler(ctx, mes)
+						logrus.Errorf("[%s] error: %s", mes.Command, err.Error())
 						continue
 					}
 					continue
