@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"uahSalaryBot/external"
+	"uahSalaryBot/external/db"
 	"uahSalaryBot/infrastructure/command"
 	"uahSalaryBot/infrastructure/domain"
 	"uahSalaryBot/infrastructure/repository"
@@ -10,7 +10,7 @@ import (
 )
 
 //NewRepositories - initialize all repositories
-func NewRepositories(c *external.DbClient) *usecase.Repositories {
+func NewRepositories(c *db.DbClient) *usecase.Repositories {
 	return &usecase.Repositories{
 		User: repository.NewUserRepository(c),
 	}

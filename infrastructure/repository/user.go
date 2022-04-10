@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"uahSalaryBot/external"
+	"uahSalaryBot/external/db"
 	"uahSalaryBot/infrastructure/domain"
 )
 
@@ -14,11 +14,11 @@ type user struct {
 }
 
 type User struct {
-	client *external.DbClient
+	client *db.DbClient
 	model  *user
 }
 
-func NewUserRepository(c *external.DbClient) *User {
+func NewUserRepository(c *db.DbClient) *User {
 	return &User{client: c}
 }
 

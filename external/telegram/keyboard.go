@@ -10,12 +10,16 @@ import (
 //CommandMap uses to set up bot keyboard and map it commands. Key is button text, value is command string
 var CommandMap = map[string]string{
 	//do not touch init command
-	"start":        StartButtonCommand,
-	StartButtonKey: StartButtonCommand,
+	"start":              StartButtonCommand,
+	StartButtonKey:       StartButtonCommand,
+	BankAuthorizationKey: BankAuthorizationCommand,
 }
 
 var StartButtonKey = fmt.Sprintf("%sО боте", emoji.SmilingFace)
 var StartButtonCommand = "start"
+
+var BankAuthorizationKey = fmt.Sprintf("%sАвторизоваться в монобанке", emoji.Bank)
+var BankAuthorizationCommand = "monobank_auth"
 
 type keyboard tgbot.ReplyKeyboardMarkup
 
@@ -24,6 +28,9 @@ func Keyboard() *keyboard {
 	buttons := tgbot.NewReplyKeyboard(
 		tgbot.NewKeyboardButtonRow(
 			tgbot.NewKeyboardButton(StartButtonKey),
+		),
+		tgbot.NewKeyboardButtonRow(
+			tgbot.NewKeyboardButton(BankAuthorizationKey),
 		),
 	)
 

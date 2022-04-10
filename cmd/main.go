@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"uahSalaryBot/external"
+	"uahSalaryBot/external/db"
 	"uahSalaryBot/external/telegram"
 	"uahSalaryBot/service"
 	"uahSalaryBot/usecase"
@@ -46,7 +46,7 @@ func main() {
 }
 
 func setDependencies(bot *telegram.TelegramBot) *service.Commands {
-	dbClient := external.NewDbClient()
+	dbClient := db.NewDbClient()
 
 	repositories := service.NewRepositories(dbClient)
 	clients := usecase.NewClients(bot, repositories)

@@ -1,4 +1,4 @@
-package external
+package db
 
 import (
 	"github.com/sirupsen/logrus"

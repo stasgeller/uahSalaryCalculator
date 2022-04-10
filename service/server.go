@@ -29,6 +29,7 @@ func NewManagerServer(bot usecase.TgBot, commands CommandsInfrastructure) *Manag
 
 	m.commands = make(map[string]Handler)
 	m.commands["start"] = commands.StartAction
+	m.commands["monobank_auth"] = commands.StartAction
 
 	return m
 }
@@ -44,7 +45,10 @@ func (m *Manager) Run(ctx context.Context) {
 				if command, ok := telegram.CommandMap[mes.Command]; ok {
 					if handler, ok := m.commands[command]; ok {
 						err := handler(ctx, mes)
-						logrus.Errorf("[%s] error: %s", mes.Command, err.Error())
+						if err != nil {
+							logrus.Errorf("[%s] error: %s", mes.Command, err.Error())
+						}
+
 						continue
 					}
 					continue

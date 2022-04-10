@@ -1,0 +1,1 @@
+DROP TABLE monobank_token;
