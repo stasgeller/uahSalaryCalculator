@@ -2,8 +2,9 @@ package db
 
 import (
 	"github.com/sirupsen/logrus"
-	"gorm.io/driver/sqlite"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"os"
 )
 
 type DbClient struct {
@@ -11,9 +12,9 @@ type DbClient struct {
 }
 
 func NewDbClient() *DbClient {
-	db, err := gorm.Open(sqlite.Open("./db/salary_bot"), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(os.Getenv("POSTGRES_URL")), &gorm.Config{})
 	if err != nil {
-		logrus.Fatal("Could not connect to sqlite")
+		logrus.Fatal("Could not connect to postgres")
 	}
 
 	return &DbClient{db}
