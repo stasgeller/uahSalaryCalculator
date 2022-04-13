@@ -27,7 +27,11 @@ func NewTgBot(token string) (*TelegramBot, error) {
 
 //Send - sends messages with keyboard
 func (tg *TelegramBot) Send(_ context.Context, m tgbot.MessageConfig) error {
-	m.ReplyMarkup = Keyboard()
+	if m.ReplyMarkup == nil {
+		m.ReplyMarkup = Keyboard()
+	}
+
+	m.ParseMode = tgbot.ModeMarkdown
 
 	_, err := tg.client.Send(m)
 	return err

@@ -18,7 +18,7 @@ var CommandMap = map[string]string{
 var StartButtonKey = fmt.Sprintf("%sО боте", emoji.SmilingFace)
 var StartButtonCommand = "start"
 
-var BankAuthorizationKey = fmt.Sprintf("%sАвторизоваться в монобанке", emoji.Bank)
+var BankAuthorizationKey = fmt.Sprintf("%sПодключить банк", emoji.Bank)
 var BankAuthorizationCommand = "monobank_auth"
 
 type keyboard tgbot.ReplyKeyboardMarkup

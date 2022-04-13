@@ -12,6 +12,7 @@ import (
 //CommandsInfrastructure - basic command interface
 type CommandsInfrastructure interface {
 	StartCommand
+	AuthorizationCommand
 }
 
 //Handler - command handler
@@ -29,7 +30,7 @@ func NewManagerServer(bot usecase.TgBot, commands CommandsInfrastructure) *Manag
 
 	m.commands = make(map[string]Handler)
 	m.commands["start"] = commands.StartAction
-	m.commands["monobank_auth"] = commands.StartAction
+	m.commands["monobank_auth"] = commands.Authorization
 
 	return m
 }

@@ -1,1 +1,2 @@
-DROP TABLE monobank_token;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS monobank_token;

@@ -2,9 +2,9 @@ package usecase
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
+	"reflect"
 	"uahSalaryBot/infrastructure/command"
 	"uahSalaryBot/infrastructure/domain"
 
@@ -12,6 +12,16 @@ import (
 	tgbot "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/sirupsen/logrus"
 )
+
+type NotApplicableDomain struct {
+	incorrectDomain interface{}
+}
+
+func (d *NotApplicableDomain) Error() string {
+	name := reflect.TypeOf(d.incorrectDomain).Name()
+
+	return fmt.Sprintf("Domain type: %s is not applicable for this use case", name)
+}
 
 type TgBot interface {
 	Send(context.Context, tgbot.MessageConfig) error
@@ -38,13 +48,13 @@ type Repositories struct {
 }
 
 type Clients struct {
-	client       TgBot
+	bot          TgBot
 	repositories *Repositories
 }
 
 func NewClients(c TgBot, r *Repositories) *Clients {
 	return &Clients{
-		client:       c,
+		bot:          c,
 		repositories: r,
 	}
 }
@@ -57,7 +67,7 @@ type Start struct {
 func StartCase(cs *Clients) *Start {
 	return &Start{
 		cs.repositories.User,
-		cs.client,
+		cs.bot,
 	}
 }
 
@@ -68,7 +78,7 @@ func (s *Start) Use(ctx context.Context, userDomain interface{}) error {
 
 	user, ok := userDomain.(*domain.User)
 	if !ok {
-		return errors.New("unresolved user domain")
+		return &NotApplicableDomain{user}
 	}
 
 	if err := s.repository.FindOrCreate(ctx, user); err != nil {

@@ -18,13 +18,15 @@ func NewRepositories(c *db.DbClient) *usecase.Repositories {
 
 //UseCases - stores all use cases for each command
 type UseCases struct {
-	Start command.HandlerActions
+	Start         command.HandlerActions
+	Authorization command.HandlerActions
 }
 
 //NewUseCases - initialize all use cases
 func NewUseCases(cs *usecase.Clients) *UseCases {
 	return &UseCases{
-		Start: usecase.StartCase(cs),
+		Start:         usecase.StartCase(cs),
+		Authorization: usecase.AuthorizationUseCase(cs),
 	}
 }
 
@@ -33,14 +35,20 @@ type StartCommand interface {
 	StartAction(context.Context, *domain.Message) error
 }
 
+type AuthorizationCommand interface {
+	Authorization(context.Context, *domain.Message) error
+}
+
 //Commands - stores all available commands
 type Commands struct {
 	StartCommand
+	AuthorizationCommand
 }
 
 //NewCommands - initialize all commands.
 func NewCommands(uc *UseCases) *Commands {
 	return &Commands{
-		StartCommand: command.NewStart(uc.Start),
+		StartCommand:         command.NewStart(uc.Start),
+		AuthorizationCommand: command.NewAuth(uc.Authorization),
 	}
 }
